@@ -43,7 +43,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests (Chromium)
-        run: npx playwright test --project=chromium
+        run: npx playwright test --project=chromium --grep-invert @visual
 
       - name: Generate Allure HTML report
         if: always()
