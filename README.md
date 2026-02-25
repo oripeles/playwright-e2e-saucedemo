@@ -167,10 +167,54 @@ allure serve allure-results
 
 ---
 
+## Continuous Integration (CI)
+
+This project includes a GitHub Actions workflow that:
+
+- Runs Playwright tests automatically on every push to `main`
+- Executes tests on Chromium
+- Generates an Allure HTML report
+- Publishes the report to GitHub Pages
+
+### CI Workflow Location
+
+```
+.github/workflows/playwright-ci.yml
+```
+
+### Live Allure Report (GitHub Pages)
+
+The latest Allure report is automatically published at:
+
+```
+https://oripeles.github.io/playwright-e2e-saucedemo/
+```
+
+### CI Secrets
+
+The following GitHub repository secrets are required:
+
+- `STANDARD_USER`
+- `LOCKED_OUT_USER`
+- `PROBLEM_USER`
+- `PERFORMANCE_USER`
+- `PASSWORD`
+
+Secrets are managed via:
+
+```
+Settings → Secrets and variables → Actions
+```
+
+---
+
 ## Project Structure
 
 ```
 COVER-E2E-PLAYWRIGHT/
+├── .github/
+│   └── workflows/
+│       └── playwright-ci.yml  # GitHub Actions CI workflow
 ├── components/          # Reusable UI components (e.g., SideMenu)
 ├── fixtures/            # Custom Playwright fixtures
 ├── pages/               # Page Object Model (POM) classes
@@ -181,7 +225,7 @@ COVER-E2E-PLAYWRIGHT/
 ├── TEST_PLAN.md         # Test cases and priorities
 ├── README.md            # Project documentation
 ├── .env.example         # Environment variables template
-└── .env                 # Local environment variables (not committed)
+├── .env                 # Local environment variables (not committed)
 └── .gitignore           # Git ignore rules
 ```
 

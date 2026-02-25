@@ -1,0 +1,75 @@
+name: Playwright E2E Tests
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: playwright-e2e-pages
+  cancel-in-progress: true
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+
+    env:
+      BASE_URL: https://www.saucedemo.com
+      STANDARD_USER: ${{ secrets.STANDARD_USER }}
+      LOCKED_OUT_USER: ${{ secrets.LOCKED_OUT_USER }}
+      PROBLEM_USER: ${{ secrets.PROBLEM_USER }}
+      PERFORMANCE_USER: ${{ secrets.PERFORMANCE_USER }}
+      PASSWORD: ${{ secrets.PASSWORD }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests (Chromium)
+        run: npx playwright test --project=chromium
+
+      - name: Generate Allure HTML report
+        if: always()
+        run: |
+          rm -rf allure-report
+          mkdir -p allure-report
+          sudo apt-get update
+          sudo apt-get install -y default-jre wget
+          ALLURE_VERSION="2.27.0"
+          wget -qO /tmp/allure.tgz "https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz"
+          sudo tar -xzf /tmp/allure.tgz -C /opt/
+          sudo ln -sf "/opt/allure-${ALLURE_VERSION}/bin/allure" /usr/local/bin/allure
+          allure generate allure-results -o allure-report --clean
+
+      - name: Upload Pages artifact
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-report
+
+  deploy:
+    needs: e2e-tests
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
