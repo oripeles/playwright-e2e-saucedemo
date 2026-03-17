@@ -4,7 +4,7 @@ const PRODUCTS = {
   backpack: { name: 'Sauce Labs Backpack', price: '$29.99' },
 };
 
-test.describe('Cart Tests @regression', () => {
+test.describe('Products Tests @regression', () => {
 
 test('TC-PROD-01 – Products page is displayed @smoke ', async ({ productsPage }) => {
   await expect(productsPage.title).toHaveText('Products');

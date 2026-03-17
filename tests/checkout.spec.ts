@@ -1,8 +1,10 @@
 import { test, expect } from '../fixtures/test-fixtures';
 import { ProductsPage } from '../pages/products.page';
 
+const PRODUCT = 'Sauce Labs Backpack';
+
 async function navigateToCheckout(productsPage: ProductsPage) {
-  await productsPage.addProductToCart('Sauce Labs Backpack');
+  await productsPage.addProductToCart(PRODUCT);
   const cartPage = await productsPage.openCart();
   return await cartPage.goToCheckout();
 }

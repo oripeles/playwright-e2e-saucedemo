@@ -32,14 +32,13 @@ export class SideMenuComponent {
   }
 
   async logout() {
-  await this.openMenu();
-  await this.logoutLink.click();
-}
+    await this.openMenu();
+    await this.logoutLink.click();
+  }
 
-async resetAppState() {
-  await this.openMenu();
-  await this.resetLink.click();
-}
+  async resetAppState() {
+    await this.openMenu();
+    await this.resetLink.click();
+  }
 
-  
 }

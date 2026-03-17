@@ -58,10 +58,10 @@ export class ProductsPage {
       .click();
   }
 
-async openCart(): Promise<CartPage> {
-  await this.cartIcon.click();
-  return new CartPage(this.page);
-}
+  async openCart(): Promise<CartPage> {
+    await this.cartIcon.click();
+    return new CartPage(this.page);
+  }
 
 }
 

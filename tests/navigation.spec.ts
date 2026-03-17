@@ -20,7 +20,7 @@ test.describe('Logout & Navigation Tests @regression', () => {
   test('TC-NAV-02 – Logout redirects user to Login page @smoke', async ({ productsPage }) => {
     await productsPage.sideMenu.logout();
 
-    await expect(productsPage.page).toHaveURL('https://www.saucedemo.com/');
+    await expect(productsPage.page).toHaveURL('/');
     await expect(productsPage.page.getByTestId('username')).toBeVisible();
     await expect(productsPage.page.getByTestId('password')).toBeVisible();
     await expect(productsPage.page.getByTestId('login-button')).toBeVisible();
@@ -30,7 +30,7 @@ test.describe('Logout & Navigation Tests @regression', () => {
     await productsPage.sideMenu.logout();
 
     await productsPage.page.goto('/inventory.html');
-    await expect(productsPage.page).toHaveURL('https://www.saucedemo.com/');
+    await expect(productsPage.page).toHaveURL('/');
     await expect(productsPage.page.getByTestId('login-button')).toBeVisible();
   });
 
@@ -38,11 +38,11 @@ test.describe('Logout & Navigation Tests @regression', () => {
     await productsPage.sideMenu.logout();
 
     await productsPage.page.goto('/cart.html');
-    await expect(productsPage.page).toHaveURL('https://www.saucedemo.com/');
+    await expect(productsPage.page).toHaveURL('/');
     await expect(productsPage.page.getByTestId('login-button')).toBeVisible();
 
     await productsPage.page.goto('/checkout-step-one.html');
-    await expect(productsPage.page).toHaveURL('https://www.saucedemo.com/');
+    await expect(productsPage.page).toHaveURL('/');
     await expect(productsPage.page.getByTestId('login-button')).toBeVisible();
   });
 

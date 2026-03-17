@@ -46,11 +46,7 @@ export class CartPage {
   await this.continueShoppingButton.click();
 }
 
-async clickCheckout(): Promise<void> {
-  await this.checkoutButton.click();
-}
-
-async goToCheckout(): Promise<CheckoutStepOnePage> {
+  async goToCheckout(): Promise<CheckoutStepOnePage> {
   await this.checkoutButton.click();
   return new CheckoutStepOnePage(this.page);
 }
