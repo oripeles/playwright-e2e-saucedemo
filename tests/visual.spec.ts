@@ -5,5 +5,5 @@ test(
   { tag: '@visual' },
   async ({ productsPage }) => {
     await expect(productsPage.page).toHaveScreenshot('products-page.png');
-  }
+  },
 );

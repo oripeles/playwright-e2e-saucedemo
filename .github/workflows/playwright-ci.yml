@@ -2,22 +2,24 @@ name: Playwright E2E Tests
 
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
   pull_request:
+  schedule:
+    - cron: '0 23 * * *'
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: playwright-e2e-pages
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  e2e-tests:
+  smoke-tests:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     env:
       BASE_URL: https://www.saucedemo.com
@@ -31,32 +33,125 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Playwright Docker image
+        uses: docker/build-push-action@v5
         with:
-          node-version: 20
+          context: .
+          load: true
+          tags: playwright-tests:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Run SMOKE tests inside Docker
+        run: |
+          rm -rf allure-results traces
+          mkdir -p allure-results traces
+          docker run --rm \
+            -e BASE_URL="${{ env.BASE_URL }}" \
+            -e STANDARD_USER="${{ secrets.STANDARD_USER }}" \
+            -e LOCKED_OUT_USER="${{ secrets.LOCKED_OUT_USER }}" \
+            -e PROBLEM_USER="${{ secrets.PROBLEM_USER }}" \
+            -e PERFORMANCE_USER="${{ secrets.PERFORMANCE_USER }}" \
+            -e PASSWORD="${{ secrets.PASSWORD }}" \
+            -v "${{ github.workspace }}/allure-results:/app/allure-results" \
+            -v "${{ github.workspace }}/traces:/app/traces" \
+            playwright-tests \
+            npx playwright test --project=chromium --grep @smoke
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+      - name: Upload smoke allure results (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-smoke
+          path: allure-results
+          retention-days: 7
 
-      - name: Run Playwright tests (Chromium)
-        run: npx playwright test --project=chromium --grep-invert @visual
+      - name: Upload smoke trace (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trace-smoke
+          path: traces
+          retention-days: 7
+
+  nightly-regression:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      BASE_URL: https://www.saucedemo.com
+      STANDARD_USER: ${{ secrets.STANDARD_USER }}
+      LOCKED_OUT_USER: ${{ secrets.LOCKED_OUT_USER }}
+      PROBLEM_USER: ${{ secrets.PROBLEM_USER }}
+      PERFORMANCE_USER: ${{ secrets.PERFORMANCE_USER }}
+      PASSWORD: ${{ secrets.PASSWORD }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Playwright Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: playwright-tests:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run REGRESSION tests inside Docker
+        run: |
+          rm -rf allure-results traces
+          mkdir -p allure-results traces
+          docker run --rm \
+            -e BASE_URL="${{ env.BASE_URL }}" \
+            -e STANDARD_USER="${{ secrets.STANDARD_USER }}" \
+            -e LOCKED_OUT_USER="${{ secrets.LOCKED_OUT_USER }}" \
+            -e PROBLEM_USER="${{ secrets.PROBLEM_USER }}" \
+            -e PERFORMANCE_USER="${{ secrets.PERFORMANCE_USER }}" \
+            -e PASSWORD="${{ secrets.PASSWORD }}" \
+            -v "${{ github.workspace }}/allure-results:/app/allure-results" \
+            -v "${{ github.workspace }}/traces:/app/traces" \
+            playwright-tests \
+            npx playwright test --project=chromium --grep-invert @visual --retries=2
+
+      - name: Upload regression trace (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trace-regression
+          path: traces
+          retention-days: 7
+
+      - name: Download previous Allure history into allure-results
+        if: always()
+        run: |
+          mkdir -p allure-results/history
+          PAGES_URL="https://oripeles.github.io/playwright-e2e-saucedemo/history"
+          curl -sSL "$PAGES_URL/history.json" -o /dev/null -w "%{http_code}" | grep -q 200 && \
+          curl -sSL -o allure-results/history/history.json "$PAGES_URL/history.json" && \
+          curl -sSL -o allure-results/history/history-trend.json "$PAGES_URL/history-trend.json" && \
+          curl -sSL -o allure-results/history/duration-trend.json "$PAGES_URL/duration-trend.json" && \
+          curl -sSL -o allure-results/history/categories-trend.json "$PAGES_URL/categories-trend.json" && \
+          curl -sSL -o allure-results/history/retry-trend.json "$PAGES_URL/retry-trend.json" || \
+          echo "No previous history found - first run"
 
       - name: Generate Allure HTML report
         if: always()
         run: |
-          rm -rf allure-report
           mkdir -p allure-report
-          sudo apt-get update
-          sudo apt-get install -y default-jre wget
-          ALLURE_VERSION="2.27.0"
-          wget -qO /tmp/allure.tgz "https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz"
-          sudo tar -xzf /tmp/allure.tgz -C /opt/
-          sudo ln -sf "/opt/allure-${ALLURE_VERSION}/bin/allure" /usr/local/bin/allure
-          allure generate allure-results -o allure-report --clean
+          docker run --rm \
+            -v "${{ github.workspace }}/allure-results:/app/allure-results" \
+            -v "${{ github.workspace }}/allure-report:/app/allure-report" \
+            playwright-tests \
+            allure generate allure-results -o allure-report --clean
 
       - name: Upload Pages artifact
         if: always()
@@ -65,11 +160,17 @@ jobs:
           path: allure-report
 
   deploy:
-    needs: e2e-tests
+    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
+    needs: nightly-regression
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4

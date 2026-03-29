@@ -1,9 +1,9 @@
 import { Page, Locator } from '@playwright/test';
+import { BasePage } from './base.page';
 import { CheckoutStepOnePage } from './checkout-step-one.page';
 import { SideMenuComponent } from '../components/side-menu.component';
 
-export class CartPage {
-  readonly page: Page;
+export class CartPage extends BasePage {
   readonly sideMenu: SideMenuComponent;
 
   readonly title: Locator;
@@ -17,9 +17,8 @@ export class CartPage {
   readonly checkoutButton: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page, 'CartPage');
     this.sideMenu = new SideMenuComponent(page);
-    
 
     this.title = page.getByTestId('title');
 
@@ -36,6 +35,7 @@ export class CartPage {
   }
 
   async removeProductByName(productName: string) {
+    this.logger.info(`Removing from cart: ${productName}`);
     await this.cartItems
       .filter({ hasText: productName })
       .getByTestId(/^remove/)
@@ -43,11 +43,13 @@ export class CartPage {
   }
 
   async continueShopping(): Promise<void> {
-  await this.continueShoppingButton.click();
-}
+    this.logger.info('Continue shopping');
+    await this.continueShoppingButton.click();
+  }
 
   async goToCheckout(): Promise<CheckoutStepOnePage> {
-  await this.checkoutButton.click();
-  return new CheckoutStepOnePage(this.page);
-}
+    this.logger.info('Going to checkout');
+    await this.checkoutButton.click();
+    return new CheckoutStepOnePage(this.page);
+  }
 }

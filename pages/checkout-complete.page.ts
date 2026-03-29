@@ -1,15 +1,13 @@
 import { Page, Locator } from '@playwright/test';
+import { BasePage } from './base.page';
 
-export class CheckoutCompletePage {
-  readonly page: Page;
-  
-
+export class CheckoutCompletePage extends BasePage {
   readonly title: Locator;
   readonly completeContainer: Locator;
   readonly backToProductsButton: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page, 'CheckoutCompletePage');
 
     this.title = page.getByTestId('title');
     this.completeContainer = page.getByTestId('checkout-complete-container');
@@ -17,6 +15,7 @@ export class CheckoutCompletePage {
   }
 
   async clickBackToProducts() {
+    this.logger.info('Navigating back to products');
     await this.backToProductsButton.click();
   }
 }

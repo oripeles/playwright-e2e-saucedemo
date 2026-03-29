@@ -1,11 +1,9 @@
 import { Page, Locator } from '@playwright/test';
+import { BasePage } from './base.page';
 import { CheckoutCompletePage } from './checkout-complete.page';
 
-export class CheckoutOverviewPage {
-  readonly page: Page;
-
+export class CheckoutOverviewPage extends BasePage {
   readonly title: Locator;
-  
 
   readonly inventoryItems: Locator;
   readonly quantities: Locator;
@@ -14,7 +12,7 @@ export class CheckoutOverviewPage {
   readonly cancelButton: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page, 'CheckoutOverviewPage');
 
     this.title = page.getByTestId('title');
 
@@ -26,11 +24,13 @@ export class CheckoutOverviewPage {
   }
 
   async clickFinish(): Promise<CheckoutCompletePage> {
+    this.logger.info('Clicking finish');
     await this.finishButton.click();
     return new CheckoutCompletePage(this.page);
   }
 
   async clickCancel() {
+    this.logger.info('Clicking cancel');
     await this.cancelButton.click();
   }
 }

@@ -2,7 +2,6 @@
 import { test as base, expect } from '@playwright/test';
 import { LoginPage } from '../pages/login.page';
 import { ProductsPage } from '../pages/products.page';
-import { CartPage } from '../pages/cart.page';
 import { config } from '../utils/config';
 
 type Fixtures = {
@@ -22,7 +21,6 @@ export const test = base.extend<Fixtures>({
     await expect(productsPage.title).toHaveText('Products');
     await use(productsPage);
   },
-  
 });
 
 export { expect };

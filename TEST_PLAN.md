@@ -11,12 +11,14 @@ The purpose of this test plan is to validate core user flows using Playwright, w
 ## 2. Scope
 
 ### In Scope
+
 - Login functionality
 - User authentication scenarios
 - Error handling and validation messages
 - Navigation after successful login
 
 ### Out of Scope
+
 - Advanced security testing (SQL injection, brute force attacks)
 - UI/UX visual validation
 - Backend/API testing
@@ -27,6 +29,7 @@ The purpose of this test plan is to validate core user flows using Playwright, w
 ## 3. Test Data
 
 The application provides built-in demo users with predefined behaviors:
+
 - standard_user
 - locked_out_user
 - problem_user
@@ -41,8 +44,8 @@ Credentials and environment-specific values are managed via environment variable
 | Test ID     | Description                        | Priority |
 | ----------- | ---------------------------------- | -------- |
 | TC-LOGIN-01 | Login with valid user              | High     |
-| TC-LOGIN-02 | Login with locked user             | High     |
-| TC-LOGIN-03 | Login with invalid password        | High     |
+| TC-LOGIN-02 | Login with locked user             | Medium   |
+| TC-LOGIN-03 | Login with invalid password        | Medium   |
 | TC-LOGIN-04 | Login with empty fields            | Medium   |
 | TC-LOGIN-05 | Login with problem user            | Medium   |
 | TC-LOGIN-06 | Login with performance glitch user | Low      |
@@ -85,7 +88,7 @@ An error message indicating the user is locked is displayed.
 
 User remains on the login page.
 
-### TC-LOGIN-03 – Login with invalid password 
+### TC-LOGIN-03 – Login with invalid password
 
 **Steps:**
 
@@ -164,12 +167,11 @@ User is redirected to the Products page.
 | Test ID    | Description                                | Priority |
 | ---------- | ------------------------------------------ | -------- |
 | TC-PROD-01 | Products page is displayed                 | High     |
-| TC-PROD-02 | Products list contains valid product items | High     |
+| TC-PROD-02 | Products list contains valid product items | Medium   |
 | TC-PROD-03 | Sort products by name (A to Z)             | Medium   |
 | TC-PROD-04 | Sort products by price (low to high)       | Medium   |
 | TC-PROD-05 | Open product details page                  | Medium   |
 | TC-PROD-06 | Add product to cart from products page     | High     |
-
 
 ### TC-PROD-01 – Products page is displayed
 
@@ -273,14 +275,14 @@ Cart icon badge is updated accordingly.
 
 ## 7. Cart Test Cases
 
-| Test ID     | Description                                   | Priority |
-| ----------- | --------------------------------------------- | -------- |
-| TC-CART-01  | Cart is empty initially                       | Medium   |
-| TC-CART-02  | Added product appears in cart                 | High     |
-| TC-CART-03  | Multiple products appear correctly in cart    | High     |
-| TC-CART-04  | Remove product from cart                      | Medium   |
-| TC-CART-05  | Continue shopping navigates to Products page  | Medium   |
-| TC-CART-06  | Checkout button navigates to checkout page    | High     |
+| Test ID    | Description                                  | Priority |
+| ---------- | -------------------------------------------- | -------- |
+| TC-CART-01 | Cart is empty initially                      | Medium   |
+| TC-CART-02 | Added product appears in cart                | High     |
+| TC-CART-03 | Multiple products appear correctly in cart   | Medium   |
+| TC-CART-04 | Remove product from cart                     | High     |
+| TC-CART-05 | Continue shopping navigates to Products page | Medium   |
+| TC-CART-06 | Checkout button navigates to checkout page   | Medium   |
 
 ### TC-CART-01 – Cart is empty initially
 
@@ -398,8 +400,8 @@ Checkout form is displayed.
 
 | Test ID   | Description                                                   | Priority |
 | --------- | ------------------------------------------------------------- | -------- |
-| TC-CHK-01 | Navigate to Checkout Step One from Cart                       | High     |
-| TC-CHK-02 | Checkout Step One – validation: all fields empty              | High     |
+| TC-CHK-01 | Navigate to Checkout Step One from Cart                       | Medium   |
+| TC-CHK-02 | Checkout Step One – validation: all fields empty              | Medium   |
 | TC-CHK-03 | Checkout Step One – validation: missing First Name            | Medium   |
 | TC-CHK-04 | Checkout Step One – validation: missing Last Name             | Medium   |
 | TC-CHK-05 | Checkout Step One – validation: missing Zip/Postal Code       | Medium   |
