@@ -32,5 +32,27 @@ export default defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
+
+    // --- Visual tests – mobile & tablet devices ---
+    {
+      name: 'visual-iphone-14',
+      use: { ...devices['iPhone 14'] },
+      grep: /@visual/,
+    },
+    {
+      name: 'visual-iphone-14-pro-max',
+      use: { ...devices['iPhone 14 Pro Max'] },
+      grep: /@visual/,
+    },
+    {
+      name: 'visual-pixel-7',
+      use: { ...devices['Pixel 7'] },
+      grep: /@visual/,
+    },
+    {
+      name: 'visual-ipad',
+      use: { ...devices['iPad (gen 7)'] },
+      grep: /@visual/,
+    },
   ],
 });

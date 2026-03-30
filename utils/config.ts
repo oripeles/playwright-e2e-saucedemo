@@ -1,6 +1,4 @@
 export const config = {
-  baseUrl: process.env.BASE_URL!,
-
   users: {
     standard: process.env.STANDARD_USER!,
     locked: process.env.LOCKED_OUT_USER!,

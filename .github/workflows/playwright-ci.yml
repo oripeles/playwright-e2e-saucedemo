@@ -120,7 +120,19 @@ jobs:
             -v "${{ github.workspace }}/allure-results:/app/allure-results" \
             -v "${{ github.workspace }}/traces:/app/traces" \
             playwright-tests \
-            npx playwright test --project=chromium --grep-invert @visual --retries=2
+            npx playwright test --project=chromium --project=firefox --project=webkit --retries=2
+
+      - name: Run VISUAL tests on mobile devices inside Docker
+        if: always()
+        run: |
+          docker run --rm \
+            -e BASE_URL="${{ env.BASE_URL }}" \
+            -e STANDARD_USER="${{ secrets.STANDARD_USER }}" \
+            -e PASSWORD="${{ secrets.PASSWORD }}" \
+            -v "${{ github.workspace }}/allure-results:/app/allure-results" \
+            -v "${{ github.workspace }}/traces:/app/traces" \
+            playwright-tests \
+            npx playwright test --project=visual-iphone-14 --project=visual-iphone-14-pro-max --project=visual-pixel-7 --project=visual-ipad
 
       - name: Upload regression trace (artifact)
         if: always()

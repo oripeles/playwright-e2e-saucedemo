@@ -1,4 +1,5 @@
 import { test, expect } from '../fixtures/test-fixtures';
+import { LoginPage } from '../pages/login.page';
 
 const PRODUCT_1 = 'Sauce Labs Backpack';
 
@@ -34,10 +35,11 @@ test.describe('Logout & Navigation Tests', { tag: '@regression' }, () => {
       });
 
       await test.step('Verify redirected to login page', async () => {
+        const loginPage = new LoginPage(productsPage.page);
         await expect(productsPage.page).toHaveURL('/');
-        await expect(productsPage.page.getByTestId('username')).toBeVisible();
-        await expect(productsPage.page.getByTestId('password')).toBeVisible();
-        await expect(productsPage.page.getByTestId('login-button')).toBeVisible();
+        await expect(loginPage.usernameInput).toBeVisible();
+        await expect(loginPage.passwordInput).toBeVisible();
+        await expect(loginPage.loginButton).toBeVisible();
       });
     },
   );
@@ -52,12 +54,15 @@ test.describe('Logout & Navigation Tests', { tag: '@regression' }, () => {
     });
 
     await test.step('Verify redirected to login', async () => {
+      const loginPage = new LoginPage(productsPage.page);
       await expect(productsPage.page).toHaveURL('/');
-      await expect(productsPage.page.getByTestId('login-button')).toBeVisible();
+      await expect(loginPage.loginButton).toBeVisible();
     });
   });
 
   test('TC-NAV-04 – Direct navigation to protected URL without login', async ({ productsPage }) => {
+    const loginPage = new LoginPage(productsPage.page);
+
     await test.step('Logout', async () => {
       await productsPage.sideMenu.logout();
     });
@@ -65,24 +70,24 @@ test.describe('Logout & Navigation Tests', { tag: '@regression' }, () => {
     await test.step('Try to access cart page directly', async () => {
       await productsPage.page.goto('/cart.html');
       await expect(productsPage.page).toHaveURL('/');
-      await expect(productsPage.page.getByTestId('login-button')).toBeVisible();
+      await expect(loginPage.loginButton).toBeVisible();
     });
 
     await test.step('Try to access checkout page directly', async () => {
       await productsPage.page.goto('/checkout-step-one.html');
       await expect(productsPage.page).toHaveURL('/');
-      await expect(productsPage.page.getByTestId('login-button')).toBeVisible();
+      await expect(loginPage.loginButton).toBeVisible();
     });
   });
 
   test('TC-NAV-05 – Cart icon navigates correctly', async ({ productsPage }) => {
-    await test.step('Click cart icon', async () => {
-      await productsPage.cartIcon.click();
+    const cartPage = await test.step('Click cart icon', async () => {
+      return await productsPage.openCart();
     });
 
     await test.step('Verify on cart page', async () => {
       await expect(productsPage.page).toHaveURL(/cart\.html/);
-      await expect(productsPage.page.getByTestId('title')).toHaveText('Your Cart');
+      await expect(cartPage.title).toHaveText('Your Cart');
     });
   });
 
@@ -104,7 +109,7 @@ test.describe('Logout & Navigation Tests', { tag: '@regression' }, () => {
 
     await test.step('Verify cart is empty', async () => {
       await productsPage.cartIcon.click();
-      await expect(productsPage.page.getByTestId('inventory-item')).toHaveCount(0);
+      await expect(productsPage.inventoryItems).toHaveCount(0);
     });
 
     await test.step('Verify add-to-cart button is restored', async () => {
