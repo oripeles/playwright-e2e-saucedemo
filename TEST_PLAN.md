@@ -16,11 +16,11 @@ The purpose of this test plan is to validate core user flows using Playwright, w
 - User authentication scenarios
 - Error handling and validation messages
 - Navigation after successful login
+- Visual regression testing (multi-device: desktop, mobile, tablet)
 
 ### Out of Scope
 
 - Advanced security testing (SQL injection, brute force attacks)
-- UI/UX visual validation
 - Backend/API testing
 - User management (create/update/delete users)
 
@@ -643,7 +643,98 @@ If product buttons remain in “Remove” state after reset, this should be repo
 
 ---
 
-## 10. Risks
+## 10. Visual Regression Test Cases
+
+Visual tests run on 7 devices: Desktop Chrome, Desktop Firefox, Desktop Safari, iPhone 14, iPhone 14 Pro Max, Pixel 7, iPad (gen 7).
+
+| Test ID      | Description              | Priority | Tag       |
+| ------------ | ------------------------ | -------- | --------- |
+| TC-VISUAL-01 | Products page            | Medium   | `@visual` |
+| TC-VISUAL-02 | Product details page     | Medium   | `@visual` |
+| TC-VISUAL-03 | Cart page (empty)        | Medium   | `@visual` |
+| TC-VISUAL-04 | Cart page (with product) | Medium   | `@visual` |
+| TC-VISUAL-05 | Checkout step one page   | Medium   | `@visual` |
+| TC-VISUAL-06 | Side menu open           | Low      | `@visual` |
+
+### TC-VISUAL-01 – Products page
+
+**Steps:**
+
+1. Login with a valid user.
+
+2. Navigate to the Products page.
+
+**Expected Result:**
+
+Screenshot matches the baseline for each device.
+
+### TC-VISUAL-02 – Product details page
+
+**Steps:**
+
+1. Login with a valid user.
+
+2. Open product details for "Sauce Labs Backpack".
+
+**Expected Result:**
+
+Screenshot matches the baseline for each device.
+
+### TC-VISUAL-03 – Cart page (empty)
+
+**Steps:**
+
+1. Login with a valid user.
+
+2. Navigate to the Cart page without adding any products.
+
+**Expected Result:**
+
+Screenshot matches the baseline for each device.
+
+### TC-VISUAL-04 – Cart page (with product)
+
+**Steps:**
+
+1. Login with a valid user.
+
+2. Add "Sauce Labs Backpack" to the cart.
+
+3. Navigate to the Cart page.
+
+**Expected Result:**
+
+Screenshot matches the baseline for each device.
+
+### TC-VISUAL-05 – Checkout step one page
+
+**Steps:**
+
+1. Login with a valid user.
+
+2. Add a product to cart.
+
+3. Open Cart → Click Checkout.
+
+**Expected Result:**
+
+Screenshot matches the baseline for each device.
+
+### TC-VISUAL-06 – Side menu open
+
+**Steps:**
+
+1. Login with a valid user.
+
+2. Open the side menu.
+
+**Expected Result:**
+
+Screenshot matches the baseline for each device.
+
+---
+
+## 11. Risks
 
 - The demo site behavior may change without notice
 - Performance-related scenarios may be inconsistent
@@ -651,7 +742,6 @@ If product buttons remain in “Remove” state after reset, this should be repo
 
 ---
 
-## 11. Summary
+## 12. Summary
 
-This test plan defines a focused and effective set of login test scenarios that cover both positive and negative flows, ensuring reliable validation of the authentication process.  
-Additional application areas will be added incrementally as automation coverage expands.
+This test plan defines a comprehensive set of E2E test scenarios covering login, products, cart, checkout, navigation, and visual regression across multiple devices and browsers, ensuring reliable validation of the application's core functionality and visual consistency.
