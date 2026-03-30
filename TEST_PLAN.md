@@ -17,10 +17,11 @@ The purpose of this test plan is to validate core user flows using Playwright, w
 - Error handling and validation messages
 - Navigation after successful login
 - Visual regression testing (multi-device: desktop, mobile, tablet)
+- Security-aware testing (SQL injection, XSS, input validation)
 
 ### Out of Scope
 
-- Advanced security testing (SQL injection, brute force attacks)
+- Advanced penetration testing (OWASP ZAP, Burp Suite)
 - Backend/API testing
 - User management (create/update/delete users)
 
@@ -734,7 +735,87 @@ Screenshot matches the baseline for each device.
 
 ---
 
-## 11. Risks
+## 11. Security-Aware Test Cases
+
+| Test ID   | Description                               | Priority | Tag           |
+| --------- | ----------------------------------------- | -------- | ------------- |
+| TC-SEC-01 | SQL injection in login form               | High     | `@regression` |
+| TC-SEC-02 | XSS injection in login form               | High     | `@regression` |
+| TC-SEC-03 | Password field is masked                  | High     | `@regression` |
+| TC-SEC-04 | Error message does not expose system info | Medium   | `@regression` |
+| TC-SEC-05 | HTML injection in checkout form           | Medium   | `@regression` |
+
+### TC-SEC-01 – SQL injection in login form
+
+**Steps:**
+
+1. Navigate to the login page.
+
+2. Enter `' OR 1=1 --` as username with any password.
+
+3. Click Login.
+
+**Expected Result:**
+
+Login is blocked. Error message is displayed. Error does not contain SQL-related terms (SQL, syntax, query).
+
+### TC-SEC-02 – XSS injection in login form
+
+**Steps:**
+
+1. Navigate to the login page.
+
+2. Enter `<script>alert("xss")</script>` as username.
+
+3. Click Login.
+
+**Expected Result:**
+
+Login is blocked. No JavaScript dialog (alert) is triggered. Error message is displayed.
+
+### TC-SEC-03 – Password field is masked
+
+**Steps:**
+
+1. Navigate to the login page.
+
+2. Inspect the password input field.
+
+**Expected Result:**
+
+Password input has `type="password"` attribute, ensuring the password is masked (shown as dots).
+
+### TC-SEC-04 – Error message does not expose system info
+
+**Steps:**
+
+1. Navigate to the login page.
+
+2. Login with invalid credentials.
+
+**Expected Result:**
+
+Error message is generic. It does not contain system information such as stack traces, exception details, database errors, or server errors.
+
+### TC-SEC-05 – HTML injection in checkout form
+
+**Steps:**
+
+1. Login with a valid user.
+
+2. Add a product to cart and navigate to checkout.
+
+3. Enter HTML/script tags in First Name, Last Name, and Postal Code fields.
+
+4. Click Continue.
+
+**Expected Result:**
+
+No JavaScript dialog (alert) is triggered. No injected HTML elements are rendered on the page.
+
+---
+
+## 12. Risks
 
 - The demo site behavior may change without notice
 - Performance-related scenarios may be inconsistent
@@ -742,6 +823,6 @@ Screenshot matches the baseline for each device.
 
 ---
 
-## 12. Summary
+## 13. Summary
 
-This test plan defines a comprehensive set of E2E test scenarios covering login, products, cart, checkout, navigation, and visual regression across multiple devices and browsers, ensuring reliable validation of the application's core functionality and visual consistency.
+This test plan defines a comprehensive set of E2E test scenarios covering login, products, cart, checkout, navigation, visual regression, and security-aware testing across multiple devices and browsers, ensuring reliable validation of the application's core functionality, visual consistency, and basic security posture.

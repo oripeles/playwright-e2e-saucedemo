@@ -39,7 +39,8 @@ This project demonstrates a clean, scalable automation architecture including:
 - Cart operations (add, remove, multiple products, empty cart)
 - Checkout (form validations + full successful flow)
 - Navigation & logout (side menu, protected URLs, reset app state)
-- Visual regression (screenshot comparison)
+- Visual regression (screenshot comparison across 7 devices: desktop, mobile, tablet)
+- Security-aware testing (SQL injection, XSS, input validation, password masking)
 
 ### Test Tags (Playwright Native)
 
@@ -93,7 +94,8 @@ playwright-e2e-saucedemo/
 │   ├── cart.spec.ts
 │   ├── checkout.spec.ts
 │   ├── navigation.spec.ts
-│   └── visual.spec.ts
+│   ├── visual.spec.ts
+│   └── security.spec.ts
 ├── utils/                       # Config and logger
 │   ├── config.ts
 │   └── logger.ts
@@ -270,11 +272,11 @@ Tests are executed inside Docker using the same image and configuration as local
 
 ### Workflow: `.github/workflows/playwright-ci.yml`
 
-| Trigger                      | Job                  | What Runs                     |
-| ---------------------------- | -------------------- | ----------------------------- |
-| Push to `main` / PR          | `smoke-tests`        | `@smoke` tagged tests only    |
-| Nightly (23:00 UTC) / Manual | `nightly-regression` | All tests with retries        |
-| After regression             | `deploy`             | Allure report to GitHub Pages |
+| Trigger                      | Job                  | What Runs                                           |
+| ---------------------------- | -------------------- | --------------------------------------------------- |
+| Push to `main` / PR          | `smoke-tests`        | `@smoke` tagged tests only                          |
+| Nightly (23:00 UTC) / Manual | `nightly-regression` | All tests (3 browsers) + visual on 4 mobile devices |
+| After regression             | `deploy`             | Allure report to GitHub Pages                       |
 
 ### Live Allure Report
 
@@ -315,9 +317,11 @@ globalSetup: './global-setup.ts';
 
 ---
 
-## Cross-Browser Support
+## Cross-Browser & Multi-Device Support
 
 Configured in `playwright.config.ts`:
+
+### Functional Tests (all test suites)
 
 | Project    | Browser         |
 | ---------- | --------------- |
@@ -325,4 +329,13 @@ Configured in `playwright.config.ts`:
 | `firefox`  | Desktop Firefox |
 | `webkit`   | Desktop Safari  |
 
-CI runs Chromium only. Run all browsers locally with `npm test`.
+### Visual Tests – Mobile & Tablet (`@visual` only)
+
+| Project                    | Device            |
+| -------------------------- | ----------------- |
+| `visual-iphone-14`         | iPhone 14         |
+| `visual-iphone-14-pro-max` | iPhone 14 Pro Max |
+| `visual-pixel-7`           | Pixel 7           |
+| `visual-ipad`              | iPad (gen 7)      |
+
+CI runs all browsers for regression + mobile devices for visual tests.
